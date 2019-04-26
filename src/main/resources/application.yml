@@ -1,0 +1,139 @@
+spring:
+  application:
+    name: crl-server
+  profiles:
+    active: dev
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initialSize: 49
+      minIdle: 49
+      maxActive: 499
+      maxWait: 29999
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      #连接测试
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      filters: stat,wall
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      managerAccount: admin
+      managerPassword: password
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: true
+  # 如果没有匹配处理器时抛出异常
+  mvc:
+    throw-exception-if-no-handler-found: true
+    static-path-pattern: /static/**
+  # 静态资源路径
+  resources:
+    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:${web.upload-path}
+
+# 设置Hystrix超时时间
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+
+scheduler:
+  pool:
+    size: 20
+    waitForTasksToCompleteOnShutdown: true
+    awaitTerminationSeconds: 60
+---
+# 开发环境
+spring:
+  profiles: dev
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/crl?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
+    username: root
+    password: password
+
+# 日志
+logging:
+  level:
+    root: INFO
+
+# 服务端口
+server:
+  port: 8090
+  tomcat:
+    max-threads: 100
+    min-spare-threads: 50
+    uri-encoding: UTF-8
+    accept-count: 500
+    max-connections: 600
+  context-path: /crl
+
+# 注册发现管理
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+    status-page-url-path: ${server.context-path}/info
+
+# actuator health
+management:
+  security:
+    enabled: false
+
+info:
+  title: CrlServer by yang_yunxiang@topca.cn
+
+---
+# 生产环境
+spring:
+  profiles: pro
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://47.104.25.249:3336/crl?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
+    username: root
+    password: 123456
+
+# 日志
+logging:
+  level:
+    root: INFO
+  file: logs/${spring.application.name}.log
+
+# 服务端口
+server:
+  port: 18080
+  tomcat:
+    max-threads: 500
+    min-spare-threads: 100
+    uri-encoding: UTF-8
+    accept-count: 1000
+    max-connections: 1500
+  context-path: /crl
+# 注册发现管理
+eureka:
+  client:
+    service-url:
+      defaultZone: http://192.168.100.231:8899/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+    status-page-url-path: ${server.context-path}/info
+
+---
+
+
+
+
