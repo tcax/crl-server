@@ -96,12 +96,12 @@ public class CaConfigController {
      * @description 删除CA配置
      */
     @PostMapping(value = {"/delete"})
-    public JSONObject delete(HttpServletRequest request, @RequestBody JSONObject param) throws Exception {
+    public JSONObject delete(HttpServletRequest request, @RequestBody JSONObject param, @RequestAttribute("authorization") Authorization authorization) throws Exception {
         String crlUrl = param.getString("crlUrl");
         if (StringUtils.isEmpty(crlUrl)) {
             return JsonBuilder.build(ApiResponse.ERROR_PARAMS_MISS);
         }
-        caConfigService.deleteCaConfig(crlUrl);
+        caConfigService.deleteCaConfig(authorization, crlUrl);
         return JsonBuilder.build(ApiResponse.SUCCESS);
     }
 }

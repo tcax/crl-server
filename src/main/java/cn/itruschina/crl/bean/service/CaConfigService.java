@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -64,7 +63,7 @@ public class CaConfigService {
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public void deleteCaConfig(String crlUrl) {
+    public void deleteCaConfig(Authorization authorization, String crlUrl) {
         CaConfig dbCaConfig = caConfigDao.findByBaseCrlUrlOrDeltaCrlUrl(crlUrl);
         if (dbCaConfig != null) {
             List<CrlRecord> crlRecordList = crlRecodeDao.findByCaConfigId(dbCaConfig.getId());
@@ -72,6 +71,7 @@ public class CaConfigService {
                 crlRecodeDao.delete(crlRecord);
             });
             caConfigDao.delete(dbCaConfig);
+            authAndCaDao.deleteByAuthorizationIdAndCaConfigId(authorization.getId(), dbCaConfig.getId());
         }
 
     }

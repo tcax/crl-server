@@ -50,10 +50,15 @@ public class CrlController {
         } catch (Exception e) {
             return JsonBuilder.build(ApiResponse.ERROR_NOT_EXIST);
         }
+        JSONObject data = new JSONObject();
         if (crlRecord != null) {
-            return JsonBuilder.build(ApiResponse.ERROR_CERT_REVOKED, crlRecord);
+            data.put("status", ApiResponse.STATUS_CERT_REVOKED.getCode());
+            data.put("revocationDate", crlRecord.getRevocationDate());
+            data.put("revocationReason", crlRecord.getRevocationReason());
+            return JsonBuilder.build(ApiResponse.STATUS_CERT_REVOKED, data);
         } else {
-            return JsonBuilder.build(ApiResponse.ERROR_CERT_ENABLE);
+            data.put("status", ApiResponse.STATUS_CERT_ENABLE.getCode());
+            return JsonBuilder.build(ApiResponse.SUCCESS, data);
 
         }
     }

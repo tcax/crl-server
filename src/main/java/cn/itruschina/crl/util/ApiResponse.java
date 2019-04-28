@@ -24,8 +24,8 @@ public enum ApiResponse {
     ERROR_DISABLED(106, "禁用状态"),
     ERROR_EXPIRED(107, "过期信息"),
     ERROR_UNKNOWN(108, "未知错误"),
-    ERROR_CERT_ENABLE(109, "证书未吊销"),
-    ERROR_CERT_REVOKED(110, "证书已吊销"),
+    STATUS_CERT_ENABLE(0, "证书未吊销"),
+    STATUS_CERT_REVOKED(1, "证书已吊销"),
 
     ERROR_UNAUTHORIZED(111, "身份认证失败");
 
