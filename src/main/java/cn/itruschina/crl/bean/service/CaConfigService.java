@@ -64,12 +64,14 @@ public class CaConfigService {
     public void deleteCaConfig(Authorization authorization, String crlUrl) {
         CaConfig dbCaConfig = caConfigDao.findByBaseCrlUrlOrDeltaCrlUrl(crlUrl);
         if (dbCaConfig != null) {
+            long dbCaConfigId = dbCaConfig.getId();
             List<CrlRecord> crlRecordList = crlRecodeDao.findByCaConfigId(dbCaConfig.getId());
             crlRecordList.stream().forEach(crlRecord -> {
                 crlRecodeDao.delete(crlRecord);
             });
             caConfigDao.delete(dbCaConfig);
             authAndCaDao.deleteByAuthorizationIdAndCaConfigId(authorization.getId(), dbCaConfig.getId());
+            scheduleService.removeActuatorConfig(dbCaConfigId);
         }
 
     }

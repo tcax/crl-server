@@ -47,17 +47,15 @@ public class ScheduleService {
 
     public void startFollowDeltaCrl(long caConfigId) {
         CaConfig caConfig = caConfigDao.findOne(caConfigId);
+        if (caConfig == null) {
+            removeActuatorConfig(caConfigId);
+        }
         startFollowDeltaCrl(caConfig);
     }
 
     public void startFollowDeltaCrl(CaConfig caConfig) {
         long caConfigId = caConfig.getId();
-        ScheduleActuator actuator;
-        if (actuatorMap.containsKey(caConfigId)) {
-            actuator = actuatorMap.get(caConfigId);
-            actuator.stopCron();
-            actuatorMap.remove(caConfigId);
-        }
+        this.removeActuatorConfig(caConfigId);
         Date date = new Date();
         String cronStr;
         if (StringUtils.isEmpty(caConfig.getDeltaNextUpdate()) || (date.before(caConfig.getDeltaThisUpdate())) || (date.after(caConfig.getDeltaNextUpdate()))) {
@@ -65,9 +63,17 @@ public class ScheduleService {
         } else {
             cronStr = DateUtil.formatDateToCron(caConfig.getDeltaNextUpdate());
         }
-        actuator = new ScheduleActuator(caConfig, cronStr, threadPoolTaskScheduler);
+        ScheduleActuator actuator = new ScheduleActuator(caConfig, cronStr, threadPoolTaskScheduler);
         actuator.startCron();
         actuatorMap.put(caConfigId, actuator);
+    }
+
+    public void removeActuatorConfig(long caConfigId) {
+        if (actuatorMap.containsKey(caConfigId)) {
+            ScheduleActuator actuator = actuatorMap.get(caConfigId);
+            actuator.stopCron();
+            actuatorMap.remove(caConfigId);
+        }
     }
 
 }
