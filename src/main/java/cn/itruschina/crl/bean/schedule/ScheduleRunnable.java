@@ -27,18 +27,20 @@ public class ScheduleRunnable implements Runnable {
 
     @Override
     public void run() {
+        ScheduleService scheduleService = (ScheduleService) CrlContext.getApplicationContext().getBean("scheduleService");
+        CrlRecodeService crlRecodeService = (CrlRecodeService) CrlContext.getApplicationContext().getBean("crlRecodeService");
         try {
             X509Certificate caCert = TcaUtil.convB64Str2Cert(caConfig.getBase64CertString());
             CrlDownloader crlDownloader = new CrlDownloader(caCert, caConfig.getDeltaCrlUrl(), caConfig.getRetryTime());
             if (crlDownloader.getCRL() != null) {
                 X509CRL crl = crlDownloader.getCRL();
-                CrlRecodeService crlRecodeService = (CrlRecodeService) CrlContext.getApplicationContext().getBean("crlRecodeService");
                 crlRecodeService.updateCrlToDB(caConfig.getId(), crl, true);
-                ScheduleService scheduleService = (ScheduleService) CrlContext.getApplicationContext().getBean("scheduleService");
                 scheduleService.startFollowDeltaCrl(this.caConfig.getId());
             }
         } catch (CertApiException e) {
             log.error("增量CRL下载失败", e);
+        } finally {
+            scheduleService.startFollowDeltaCrl(this.caConfig.getId());
         }
     }
 }

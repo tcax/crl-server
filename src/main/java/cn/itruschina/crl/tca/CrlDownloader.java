@@ -41,7 +41,7 @@ public class CrlDownloader {
                 }
                 return crl;
             } catch (CertApiException e) {
-                log.error("全量CRL下载失败", e);
+                log.error("CRL下载失败", e);
                 throw new CertApiException(TcaErrCode.ERR_BASE_DOWNLOAD);
             }
         }

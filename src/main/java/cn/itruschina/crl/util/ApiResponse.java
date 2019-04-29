@@ -27,7 +27,7 @@ public enum ApiResponse {
     STATUS_CERT_ENABLE(0, "证书未吊销"),
     STATUS_CERT_REVOKED(1, "证书已吊销"),
 
-    ERROR_UNAUTHORIZED(111, "身份认证失败");
+    ERROR_UNAUTHORIZED(109, "身份认证失败");
 
     @Getter
     private int code;
