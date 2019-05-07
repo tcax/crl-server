@@ -3,26 +3,6 @@ spring:
     name: crl-server
   profiles:
     active: dev
-  datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    druid:
-      initialSize: 49
-      minIdle: 49
-      maxActive: 499
-      maxWait: 29999
-      timeBetweenEvictionRunsMillis: 60000
-      minEvictableIdleTimeMillis: 300000
-      #连接测试
-      validationQuery: SELECT 1 FROM DUAL
-      testWhileIdle: true
-      testOnBorrow: false
-      testOnReturn: false
-      poolPreparedStatements: true
-      maxPoolPreparedStatementPerConnectionSize: 20
-      filters: stat,wall
-      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-      managerAccount: admin
-      managerPassword: password
   jpa:
     generate-ddl: true
     hibernate:
@@ -57,10 +37,47 @@ scheduler:
 spring:
   profiles: dev
   # 数据库配置
-  datasource:
-    url: jdbc:mysql://127.0.0.1:3306/crl?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
-    username: root
-    password: password
+  shardingsphere:
+    datasource:
+      names: ds
+      ds:
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://127.0.0.1:3306/crl?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
+        username: root
+        password: password
+        #druid配置
+        initialSize: 49
+        minIdle: 49
+        maxActive: 499
+        maxWait: 29999
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: SELECT 1 FROM DUAL
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxPoolPreparedStatementPerConnectionSize: 20
+        filters: stat,wall
+        connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    sharding:
+      tables:
+        crl_record:
+          actual-data-nodes: ds.crl_record_$->{0..1}
+          table-strategy:
+            inline:
+              algorithm-expression: crl_record_$->{id % 2}
+              sharding-column: id
+      default-key-generator:
+        type: SNOWFLAKE
+        props:
+          worker.id: '0001'
+        column: id
+    props:
+      sql.show: true
+  druid:
+    managerAccount: admin
+    managerPassword: password
 
 # 日志
 logging:

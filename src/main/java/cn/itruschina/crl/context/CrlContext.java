@@ -33,7 +33,6 @@ public class CrlContext implements ApplicationContextAware {
         if (CrlContext.applicationContext == null) {
             CrlContext.applicationContext = applicationContext;
         }
-        log.info("ApplicationContext配置成功,applicationContext对象：" + CrlContext.applicationContext);
     }
 
     public static ApplicationContext getApplicationContext() {

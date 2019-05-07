@@ -1,7 +1,7 @@
 package cn.itruschina.crl.bean.service;
 
 import cn.itruschina.crl.bean.dao.CaConfigDao;
-import cn.itruschina.crl.bean.dao.CrlRecodeDao;
+import cn.itruschina.crl.bean.dao.CrlRecordDao;
 import cn.itruschina.crl.bean.domain.CaConfig;
 import cn.itruschina.crl.bean.domain.CrlRecord;
 import cn.itruschina.crl.tca.CertApiException;
@@ -27,10 +27,10 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class CrlRecodeService {
+public class CrlRecordService {
 
     @Autowired
-    CrlRecodeDao crlRecodeDao;
+    CrlRecordDao crlRecordDao;
     @Autowired
     CaConfigDao caConfigDao;
 
@@ -72,7 +72,7 @@ public class CrlRecodeService {
             throw new Exception("CA配置不唯一");
         }
         CaConfig caConfig = list.get(0);
-        CrlRecord crlRecord = crlRecodeDao.findByCaConfigIdAndSerialNumber(caConfig.getId(), serialNumber.toUpperCase());
+        CrlRecord crlRecord = crlRecordDao.findByCaConfigIdAndSerialNumber(caConfig.getId(), serialNumber.toUpperCase());
         return crlRecord;
     }
 
@@ -97,11 +97,11 @@ public class CrlRecodeService {
         while (iterator.hasNext()) {
             crlEntry = (X509CRLEntry) iterator.next();
             serialNumber = formatCertSn(crlEntry.getSerialNumber());
-            if (crlRecodeDao.findByCaConfigIdAndSerialNumber(caConfigId, serialNumber) == null) {
+            if (crlRecordDao.findByCaConfigIdAndSerialNumber(caConfigId, serialNumber) == null) {
                 revocationDate = crlEntry.getRevocationDate();
                 revocationReason = crlEntry.getRevocationReason().toString();
                 crlRecord = new CrlRecord(caConfigId, serialNumber, revocationDate, revocationReason);
-                crlRecodeDao.save(crlRecord);
+                crlRecordDao.save(crlRecord);
             }
         }
     }

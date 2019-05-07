@@ -50,8 +50,8 @@ dependencies {
     compile('mysql:mysql-connector-java:8.0.11')
     compile('com.alibaba:fastjson:1.2.47')
     compile('com.alibaba:druid:1.1.0')
-
-//    compile('org.bouncycastle:bcprov-jdk15:1.46')
+    // https://mvnrepository.com/artifact/org.apache.shardingsphere/sharding-jdbc-spring-boot-starter
+    compile('org.apache.shardingsphere:sharding-jdbc-spring-boot-starter:4.0.0-RC1')
 
 
 }

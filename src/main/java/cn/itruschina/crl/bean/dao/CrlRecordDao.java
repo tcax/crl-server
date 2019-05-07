@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 @Repository
-public interface CrlRecodeDao extends JpaRepository<CrlRecord, Long> {
+public interface CrlRecordDao extends JpaRepository<CrlRecord, Long> {
 
     /***
      * 根据CA配置ID和证书序列号查询证书吊销记录

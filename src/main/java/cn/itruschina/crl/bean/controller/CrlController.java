@@ -1,7 +1,7 @@
 package cn.itruschina.crl.bean.controller;
 
 import cn.itruschina.crl.bean.domain.CrlRecord;
-import cn.itruschina.crl.bean.service.CrlRecodeService;
+import cn.itruschina.crl.bean.service.CrlRecordService;
 import cn.itruschina.crl.util.ApiResponse;
 import cn.itruschina.crl.util.JsonBuilder;
 import com.alibaba.fastjson.JSONObject;
@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 public class CrlController {
 
     @Autowired
-    CrlRecodeService crlRecodeService;
+    CrlRecordService crlRecordService;
 
     /**
      * @param param crl查询参数
@@ -46,7 +46,7 @@ public class CrlController {
         }
         CrlRecord crlRecord;
         try {
-            crlRecord = crlRecodeService.checkRevoked(serialNumber, crlUrl, issuerDn);
+            crlRecord = crlRecordService.checkRevoked(serialNumber, crlUrl, issuerDn);
         } catch (Exception e) {
             return JsonBuilder.build(ApiResponse.ERROR_NOT_EXIST);
         }

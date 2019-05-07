@@ -2,7 +2,7 @@ package cn.itruschina.crl.bean.service;
 
 import cn.itruschina.crl.bean.dao.AuthAndCaDao;
 import cn.itruschina.crl.bean.dao.CaConfigDao;
-import cn.itruschina.crl.bean.dao.CrlRecodeDao;
+import cn.itruschina.crl.bean.dao.CrlRecordDao;
 import cn.itruschina.crl.bean.domain.AuthAndCa;
 import cn.itruschina.crl.bean.domain.Authorization;
 import cn.itruschina.crl.bean.domain.CaConfig;
@@ -33,11 +33,11 @@ public class CaConfigService {
     @Autowired
     CaConfigDao caConfigDao;
     @Autowired
-    CrlRecodeDao crlRecodeDao;
+    CrlRecordDao crlRecordDao;
     @Autowired
     AuthAndCaDao authAndCaDao;
     @Autowired
-    CrlRecodeService crlRecodeService;
+    CrlRecordService crlRecordService;
     @Autowired
     ScheduleService scheduleService;
 
@@ -65,9 +65,9 @@ public class CaConfigService {
         CaConfig dbCaConfig = caConfigDao.findByBaseCrlUrlOrDeltaCrlUrl(crlUrl);
         if (dbCaConfig != null) {
             long dbCaConfigId = dbCaConfig.getId();
-            List<CrlRecord> crlRecordList = crlRecodeDao.findByCaConfigId(dbCaConfig.getId());
+            List<CrlRecord> crlRecordList = crlRecordDao.findByCaConfigId(dbCaConfig.getId());
             crlRecordList.stream().forEach(crlRecord -> {
-                crlRecodeDao.delete(crlRecord);
+                crlRecordDao.delete(crlRecord);
             });
             caConfigDao.delete(dbCaConfig);
             authAndCaDao.deleteByAuthorizationIdAndCaConfigId(authorization.getId(), dbCaConfig.getId());
@@ -86,7 +86,7 @@ public class CaConfigService {
                 CrlDownloader crlDownloader = new CrlDownloader(cert, caConfig.getBaseCrlUrl(), caConfig.getRetryTime());
                 if (crlDownloader.getCRL() != null) {
                     X509CRL crl = crlDownloader.getCRL();
-                    crlRecodeService.updateCrlToDB(caConfig.getId(), crl, false);
+                    crlRecordService.updateCrlToDB(caConfig.getId(), crl, false);
                 }
             } catch (Exception e) {
                 log.error("全量CRL下载失败", e);

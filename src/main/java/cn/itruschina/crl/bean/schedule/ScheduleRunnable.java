@@ -1,7 +1,7 @@
 package cn.itruschina.crl.bean.schedule;
 
 import cn.itruschina.crl.bean.domain.CaConfig;
-import cn.itruschina.crl.bean.service.CrlRecodeService;
+import cn.itruschina.crl.bean.service.CrlRecordService;
 import cn.itruschina.crl.context.CrlContext;
 import cn.itruschina.crl.tca.CertApiException;
 import cn.itruschina.crl.tca.CrlDownloader;
@@ -27,14 +27,14 @@ public class ScheduleRunnable implements Runnable {
 
     @Override
     public void run() {
-        ScheduleService scheduleService = (ScheduleService) CrlContext.getApplicationContext().getBean("scheduleService");
-        CrlRecodeService crlRecodeService = (CrlRecodeService) CrlContext.getApplicationContext().getBean("crlRecodeService");
+        ScheduleService scheduleService = CrlContext.getApplicationContext().getBean("scheduleService", ScheduleService.class);
+        CrlRecordService crlRecordService = CrlContext.getApplicationContext().getBean("crlRecordService", CrlRecordService.class);
         try {
             X509Certificate caCert = TcaUtil.convB64Str2Cert(caConfig.getBase64CertString());
             CrlDownloader crlDownloader = new CrlDownloader(caCert, caConfig.getDeltaCrlUrl(), caConfig.getRetryTime());
             if (crlDownloader.getCRL() != null) {
                 X509CRL crl = crlDownloader.getCRL();
-                crlRecodeService.updateCrlToDB(caConfig.getId(), crl, true);
+                crlRecordService.updateCrlToDB(caConfig.getId(), crl, true);
                 scheduleService.startFollowDeltaCrl(this.caConfig.getId());
             }
         } catch (CertApiException e) {
