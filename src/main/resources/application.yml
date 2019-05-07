@@ -7,7 +7,6 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
-    show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     open-in-view: true
   # 如果没有匹配处理器时抛出异常
@@ -63,11 +62,13 @@ spring:
     sharding:
       tables:
         crl_record:
-          actual-data-nodes: ds.crl_record_$->{0..1}
+          #证书序列号首字母分片：actualNodes>{0..15},algorithm>InitialPreciseShardingAlgorithm
+          #证书BigInteger取余分表:algorithm>BigintPreciseShardingAlgorithm
+          actual-data-nodes: ds.crl_record_$->{0..15}
           table-strategy:
-            inline:
-              algorithm-expression: crl_record_$->{id % 2}
-              sharding-column: id
+            standard:
+              sharding-column: serial_number
+              precise-algorithm-class-name: cn.itruschina.crl.sharding.BigintPreciseShardingAlgorithm
       default-key-generator:
         type: SNOWFLAKE
         props:
