@@ -1,6 +1,7 @@
 package cn.itruschina.crl.bean.schedule;
 
 import cn.itruschina.crl.bean.domain.CaConfig;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -44,7 +45,9 @@ public class ScheduleActuator {
     }
 
     public void changeCron(String cronStr) {
-        this.cronStr = cronStr;
+        if (!StringUtils.equals(this.cronStr, cronStr)) {
+            this.cronStr = cronStr;
+        }
     }
 
 

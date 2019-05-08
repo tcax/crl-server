@@ -54,26 +54,28 @@ public class CaConfigService {
         return caConfig;
     }
 
-    public CaConfig updateCaConfig(CaConfig caConfig) {
-        caConfig = caConfigDao.save(caConfig);
-        scheduleService.startFollowDeltaCrl(caConfig);
-        return caConfig;
-    }
-
     @Transactional(rollbackFor = {Exception.class})
     public void deleteCaConfig(Authorization authorization, String crlUrl) {
         CaConfig dbCaConfig = caConfigDao.findByBaseCrlUrlOrDeltaCrlUrl(crlUrl);
         if (dbCaConfig != null) {
             long dbCaConfigId = dbCaConfig.getId();
-            List<CrlRecord> crlRecordList = crlRecordDao.findByCaConfigId(dbCaConfig.getId());
+            if (!matchAuthAndCa(authorization.getId(), dbCaConfigId)) {
+                //没有权限的异常返回
+                return;
+            }
+            List<CrlRecord> crlRecordList = crlRecordDao.findByCaConfigId(dbCaConfigId);
             crlRecordList.stream().forEach(crlRecord -> {
                 crlRecordDao.delete(crlRecord);
             });
             caConfigDao.delete(dbCaConfig);
-            authAndCaDao.deleteByAuthorizationIdAndCaConfigId(authorization.getId(), dbCaConfig.getId());
+            authAndCaDao.deleteByAuthorizationIdAndCaConfigId(authorization.getId(), dbCaConfigId);
             scheduleService.removeActuatorConfig(dbCaConfigId);
         }
 
+    }
+
+    private boolean matchAuthAndCa(long authorizationId, long caConfigId) {
+        return authAndCaDao.findByAuthorizationIdAndCaConfigId(authorizationId, caConfigId) != null;
     }
 
     public CaConfig getCaConfig(String crlUrl) {

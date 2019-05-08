@@ -8,7 +8,6 @@ import cn.itruschina.crl.tca.CrlDownloader;
 import cn.itruschina.crl.tca.TcaUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 
 /**
@@ -33,9 +32,7 @@ public class ScheduleRunnable implements Runnable {
             X509Certificate caCert = TcaUtil.convB64Str2Cert(caConfig.getBase64CertString());
             CrlDownloader crlDownloader = new CrlDownloader(caCert, caConfig.getDeltaCrlUrl(), caConfig.getRetryTime());
             if (crlDownloader.getCRL() != null) {
-                X509CRL crl = crlDownloader.getCRL();
-                crlRecordService.updateCrlToDB(caConfig.getId(), crl, true);
-                scheduleService.startFollowDeltaCrl(this.caConfig.getId());
+                crlRecordService.updateCrlToDB(caConfig.getId(), crlDownloader.getCRL(), true);
             }
         } catch (CertApiException e) {
             log.error("增量CRL下载失败", e);

@@ -69,28 +69,6 @@ public class CaConfigController {
     }
 
     /**
-     * @param caConfig CA配置信息
-     * @return 更新CA配置处理结果
-     * @description 更新CA配置
-     */
-    @PostMapping(value = {"/update"})
-    public JSONObject update(HttpServletRequest request, @RequestBody CaConfig caConfig) throws Exception {
-        if (caConfig.getId() == 0) {
-            return JsonBuilder.build(ApiResponse.ERROR_PARAMS_MISS, "id");
-        } else if (StringUtils.isEmpty(caConfig.getName())) {
-            return JsonBuilder.build(ApiResponse.ERROR_PARAMS_MISS, "name");
-        } else if (StringUtils.isEmpty(caConfig.getBaseCrlUrl())) {
-            return JsonBuilder.build(ApiResponse.ERROR_PARAMS_MISS, "baseCrlUrl");
-        } else if (StringUtils.isEmpty(caConfig.getDeltaCrlUrl())) {
-            return JsonBuilder.build(ApiResponse.ERROR_PARAMS_MISS, "deltaCrlUrl");
-        } else if (StringUtils.isEmpty(caConfig.getBase64CertString())) {
-            return JsonBuilder.build(ApiResponse.ERROR_PARAMS_MISS, "base64CertString");
-        }
-        caConfigService.updateCaConfig(caConfig);
-        return JsonBuilder.build(ApiResponse.SUCCESS);
-    }
-
-    /**
      * @param
      * @return 删除CA配置处理结果
      * @description 删除CA配置
