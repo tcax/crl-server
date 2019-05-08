@@ -69,11 +69,6 @@ spring:
             standard:
               sharding-column: serial_number
               precise-algorithm-class-name: cn.itruschina.crl.sharding.BigintPreciseShardingAlgorithm
-      default-key-generator:
-        type: SNOWFLAKE
-        props:
-          worker.id: '0001'
-        column: id
     props:
       sql.show: true
   druid:
